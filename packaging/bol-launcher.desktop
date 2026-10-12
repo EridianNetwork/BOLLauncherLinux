@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Borderlands Online Launcher
+Comment=Find Borderlands Online servers and play with Wine or Proton
+Exec=bol-launcher
+Icon=bol-launcher
+Categories=Game;
+Terminal=false

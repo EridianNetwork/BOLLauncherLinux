@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkListStore" id="serverStore">
+    <columns>
+      <column type="gchararray"/>
+      <column type="gchararray"/>
+      <column type="gchararray"/>
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkFileFilter" id="exeFilter">
+    <patterns>
+      <pattern>*.exe</pattern>
+      <pattern>*.EXE</pattern>
+    </patterns>
+  </object>
+  <object class="GtkFileFilter" id="linuxExeFilter">
+    <mime-types>
+      <mime-type>application/x-executable</mime-type>
+      <mime-type>application/x-pie-executable</mime-type>
+      <mime-type>application/x-sharedlib</mime-type>
+      <mime-type>application/x-shellscript</mime-type>
+    </mime-types>
+  </object>
+  <object class="GtkImage" id="argsInfoIcon">
+    <property name="visible">True</property>
+    <property name="icon_name">dialog-information-symbolic</property>
+  </object>
+  <object class="GtkWindow" id="mainWindow">
+    <property name="can_focus">False</property>
+    <property name="title">Borderlands Online Launcher</property>
+    <property name="default_width">760</property>
+    <property name="default_height">480</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="show_close_button">True</property>
+        <property name="title">Borderlands Online</property>
+        <child type="title">
+          <object class="GtkStackSwitcher" id="pageSwitcher">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="stack">pages</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkStack" id="pages">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="transition_type">crossfade</property>
+        <child>
+          <object class="GtkBox" id="serversPage">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">8</property>
+            <property name="margin_start">12</property>
+            <property name="margin_end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <child>
+              <object class="GtkScrolledWindow" id="serverScroll">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <property name="vexpand">True</property>
+                <child>
+                  <object class="GtkTreeView" id="serverTable">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">serverStore</property>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="nameColumn">
+                        <property name="title">Name</property>
+                        <property name="expand">True</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="nameCell"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="playersColumn">
+                        <property name="title">Players</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="playersCell"/>
+                          <attributes>
+                            <attribute name="text">2</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="uptimeColumn">
+                        <property name="title">Uptime</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="uptimeCell"/>
+                          <attributes>
+                            <attribute name="text">3</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="buttonRow">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkButton" id="refreshButton">
+                    <property name="label">Refresh</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="offlineButton">
+                    <property name="label">Play Offline</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="pack_type">end</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="connectButton">
+                    <property name="label">Connect</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="pack_type">end</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="statusLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">Ready</property>
+                <property name="xalign">0</property>
+                <property name="ellipsize">end</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">servers</property>
+            <property name="title">Servers</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="optionsScroll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <child>
+              <object class="GtkGrid" id="optionsPage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">16</property>
+                <property name="margin_bottom">16</property>
+                <property name="row_spacing">10</property>
+                <property name="column_spacing">12</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Game executable (BOL.exe)</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFileChooserButton" id="gameExePicker">
+                    <property name="visible">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="title">Select BOL.exe</property>
+                    <property name="filter">exeFilter</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Local server (Linux executable)</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFileChooserButton" id="serverExePicker">
+                    <property name="visible">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="title">Select the Linux local server (eridian-server)</property>
+                    <property name="filter">linuxExeFilter</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Run with</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="runnerCombo">
+                    <property name="visible">True</property>
+                    <property name="active_id">wine</property>
+                    <items>
+                      <item id="wine">Wine</item>
+                      <item id="proton">Proton</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Proton version</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="protonCombo">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Custom Wine (optional)</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="wineEntry">
+                    <property name="visible">True</property>
+                    <property name="placeholder_text">wine (system default)</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Prefix folder</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkFileChooserButton" id="prefixPicker">
+                        <property name="visible">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="action">select-folder</property>
+                        <property name="title">Select the prefix folder</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="clearPrefixButton">
+                        <property name="label">Default</property>
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="prefixHint">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Extra arguments</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkEntry" id="argsEntry">
+                        <property name="visible">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="placeholder_text">-terminal</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="argsInfoButton">
+                        <property name="visible">True</property>
+                        <property name="tooltip_text">Show available arguments</property>
+                        <property name="image">argsInfoIcon</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Theme</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="themeCombo">
+                    <property name="visible">True</property>
+                    <property name="active_id">system</property>
+                    <items>
+                      <item id="system">System</item>
+                      <item id="light">Light</item>
+                      <item id="dark">Dark</item>
+                    </items>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="saveRow">
+                    <property name="visible">True</property>
+                    <property name="spacing">12</property>
+                    <property name="margin_top">8</property>
+                    <child>
+                      <object class="GtkLabel" id="compatibilityNote">
+                        <property name="visible">True</property>
+                        <property name="label">Best compatibility tested with Proton 10</property>
+                        <property name="xalign">0</property>
+                        <property name="hexpand">True</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="saveButton">
+                        <property name="label">Save</property>
+                        <property name="visible">True</property>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">9</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">options</property>
+            <property name="title">Options</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

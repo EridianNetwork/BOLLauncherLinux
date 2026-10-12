@@ -1,0 +1,20 @@
+# Build output
+build/
+appimage-build/
+AppDir/
+
+# AppImage tooling (downloaded by build-appimage.sh)
+tools/
+
+# Release artifacts
+*.AppImage
+*.zip
+packaging/eridian-server
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*~
+.cache/
+compile_commands.json
