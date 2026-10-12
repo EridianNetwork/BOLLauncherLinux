@@ -2,6 +2,8 @@
 
 Linux launcher made with C++, GTK 3 and Glade, it shows the server list from the master server, lets you join a server, and starts `BOL.exe` with Wine or Proton, can also start the local server to play offline.
 
+![Borderlands Online Launcher on Linux](images/bol_linux_launcher.jpeg)
+
 ## What you need
 
 - Fedora: `sudo dnf install gcc-c++ cmake gtk3-devel`
