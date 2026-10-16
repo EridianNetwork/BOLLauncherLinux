@@ -440,6 +440,63 @@
             <property name="title">Options</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkBox" id="updatePage">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">8</property>
+            <property name="margin_start">12</property>
+            <property name="margin_end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <child>
+              <object class="GtkButton" id="updateButton">
+                <property name="label">Update</property>
+                <property name="visible">True</property>
+                <property name="halign">start</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkProgressBar" id="updateProgress">
+                <property name="visible">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="updateStatus">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="ellipsize">middle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="updateLogScroll">
+                <property name="visible">True</property>
+                <property name="shadow_type">in</property>
+                <property name="min_content_height">160</property>
+                <child>
+                  <object class="GtkTextView" id="updateLog">
+                    <property name="visible">True</property>
+                    <property name="editable">False</property>
+                    <property name="cursor_visible">False</property>
+                    <property name="monospace">True</property>
+                    <property name="wrap_mode">word-char</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="name">update</property>
+            <property name="title">Update</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>

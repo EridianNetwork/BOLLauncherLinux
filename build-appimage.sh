@@ -22,7 +22,7 @@ export DEBIAN_FRONTEND=noninteractive
 export APPIMAGE_EXTRACT_AND_RUN=1
 
 apt-get update
-apt-get install -y --no-install-recommends ca-certificates wget file g++ make cmake pkg-config libgtk-3-dev librsvg2-common libglib2.0-bin dpkg-dev
+apt-get install -y --no-install-recommends ca-certificates wget file g++ make cmake pkg-config libgtk-3-dev libssl-dev librsvg2-common libglib2.0-bin dpkg-dev
 
 rm -rf appimage-build AppDir
 cmake -B appimage-build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DSTATIC_CPP=ON

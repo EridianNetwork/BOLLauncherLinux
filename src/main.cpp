@@ -1,6 +1,7 @@
 #include "gamelauncher.h"
 #include "serverlist.h"
 #include "settings.h"
+#include "updater.h"
 
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
@@ -25,6 +26,11 @@ struct LauncherWindow {
     GtkLabel* prefixHint;
     GtkEntry* argsEntry;
     GtkComboBoxText* themeCombo;
+    GtkEntry* updateUrlEntry;
+    GtkButton* updateButton;
+    GtkProgressBar* updateProgress;
+    GtkLabel* updateStatus;
+    bool isUpdating = false;
     LauncherSettings settings;
     bool isLoadingServers = false;
     bool gameIsRunning = false;
@@ -275,6 +281,7 @@ static void readOptionsFromScreen(LauncherWindow* launcher)
 
     settings.winePath = gtk_entry_get_text(launcher->wineEntry);
     settings.extraArgs = gtk_entry_get_text(launcher->argsEntry);
+    settings.updateUrl = gtk_entry_get_text(launcher->updateUrlEntry);
 }
 
 static void onOptionChanged(GtkWidget* widget, gpointer data)
@@ -282,6 +289,59 @@ static void onOptionChanged(GtkWidget* widget, gpointer data)
     LauncherWindow* launcher = static_cast<LauncherWindow*>(data);
     readOptionsFromScreen(launcher);
     saveSettings(launcher->settings);
+}
+
+struct UpdateStep {
+    LauncherWindow* launcher;
+    std::string text;
+    double fraction;
+    bool finished;
+    bool itWorked;
+};
+
+static gboolean showUpdateStep(gpointer data)
+{
+    UpdateStep* step = static_cast<UpdateStep*>(data);
+    LauncherWindow* launcher = step->launcher;
+    gtk_label_set_text(launcher->updateStatus, step->text.c_str());
+    gtk_progress_bar_set_fraction(launcher->updateProgress, step->fraction);
+    if (step->finished) {
+        launcher->isUpdating = false;
+        gtk_widget_set_sensitive(GTK_WIDGET(launcher->updateButton), TRUE);
+        setStatus(launcher, step->itWorked ? "Update finished" : "Update failed");
+    }
+    delete step;
+    return G_SOURCE_REMOVE;
+}
+
+static void onUpdateClicked(GtkButton* button, gpointer data)
+{
+    LauncherWindow* launcher = static_cast<LauncherWindow*>(data);
+    if (launcher->isUpdating) {
+        return;
+    }
+    readOptionsFromScreen(launcher);
+    saveSettings(launcher->settings);
+
+    std::string url = launcher->settings.updateUrl;
+    std::string gameFolder;
+    if (!launcher->settings.gameExePath.empty()) {
+        gchar* folder = g_path_get_dirname(launcher->settings.gameExePath.c_str());
+        gameFolder = folder;
+        g_free(folder);
+    }
+
+    launcher->isUpdating = true;
+    gtk_widget_set_sensitive(GTK_WIDGET(launcher->updateButton), FALSE);
+
+    std::thread updateThread([launcher, url, gameFolder]() {
+        std::string message;
+        bool itWorked = updateGameFiles(url, gameFolder, [launcher](const std::string& text, double fraction) {
+            g_idle_add(showUpdateStep, new UpdateStep{launcher, text, fraction, false, false});
+        }, message);
+        g_idle_add(showUpdateStep, new UpdateStep{launcher, message, itWorked ? 1.0 : 0.0, true, itWorked});
+    });
+    updateThread.detach();
 }
 
 static void onConnectClicked(GtkButton* button, gpointer data)
@@ -388,8 +448,7 @@ static void onClearPrefixClicked(GtkButton* button, gpointer data)
     gtk_file_chooser_unselect_all(launcher->prefixPicker);
     onOptionChanged(NULL, launcher);
 }
-
-static void onArgsInfoClicked(GtkButton* button, gpointer data)
+yastatic void onArgsInfoClicked(GtkButton* button, gpointer data)
 {
     LauncherWindow* launcher = static_cast<LauncherWindow*>(data);
 
@@ -441,6 +500,7 @@ static void fillOptions(LauncherWindow* launcher)
 
     gtk_entry_set_text(launcher->wineEntry, settings.winePath.c_str());
     gtk_entry_set_text(launcher->argsEntry, settings.extraArgs.c_str());
+    gtk_entry_set_text(launcher->updateUrlEntry, settings.updateUrl.c_str());
 
     std::string hint = "If left empty this is used: " + getDefaultPrefix();
     gtk_label_set_text(launcher->prefixHint, hint.c_str());
@@ -500,6 +560,10 @@ int main(int argc, char* argv[])
     launcher->argsEntry = GTK_ENTRY(getPiece(builder, "argsEntry"));
 
     launcher->themeCombo = GTK_COMBO_BOX_TEXT(getPiece(builder, "themeCombo"));
+    launcher->updateUrlEntry = GTK_ENTRY(getPiece(builder, "updateUrlEntry"));
+    launcher->updateButton = GTK_BUTTON(getPiece(builder, "updateButton"));
+    launcher->updateProgress = GTK_PROGRESS_BAR(getPiece(builder, "updateProgress"));
+    launcher->updateStatus = GTK_LABEL(getPiece(builder, "updateStatus"));
 
     launcher->settings = loadSettings();
     applyTheme(launcher->settings.theme);
@@ -507,6 +571,7 @@ int main(int argc, char* argv[])
 
     g_signal_connect(launcher->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(launcher->refreshButton, "clicked", G_CALLBACK(onRefreshClicked), launcher);
+    g_signal_connect(launcher->updateButton, "clicked", G_CALLBACK(onUpdateClicked), launcher);
     g_signal_connect(launcher->connectButton, "clicked", G_CALLBACK(onConnectClicked), launcher);
     g_signal_connect(launcher->offlineButton, "clicked", G_CALLBACK(onOfflineClicked), launcher);
     g_signal_connect(launcher->serverTable, "row-activated", G_CALLBACK(onServerDoubleClicked), launcher);
